@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trenažér španělštiny - Slovesa & Tázací zájmena</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .mode-selector {
+            margin-bottom: 30px;
+        }
+        
+        .mode-btn {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            padding: 20px 30px;
+            margin: 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            min-width: 200px;
+        }
+        
+        .mode-btn:hover {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+        
+        .mode-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .verb-card, .question-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .spanish-verb {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .czech-question {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: inline-block;
+            width: 150px;
+            text-align: right;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .input-group input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .spanish-input {
+            width: 400px;
+            padding: 12px;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .correct {
+            border-color: #28a745 !important;
+            background: #d4edda;
+        }
+        
+        .incorrect {
+            border-color: #dc3545 !important;
+            background: #f8d7da;
+        }
+        
+        .buttons {
+            margin-top: 20px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .start-screen, .results-screen {
+            text-align: center;
+        }
+        
+        .results-screen {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .result-correct {
+            border-left: 4px solid #28a745;
+        }
+        
+        .result-incorrect {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            transition: width 0.3s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.3s ease-in-out;
+        }
+        
+        .mode-indicator {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="startScreen" class="start-screen">
+            <h1>🇪🇸 Trenažér španělštiny</h1>
+            <p style="margin-bottom: 30px; font-size: 18px; color: #666;">
+                Procvičuj si nepravidelná slovesa a tázací zájmena!
+            </p>
+            
+            <div class="mode-selector">
+                <h3 style="margin-bottom: 20px;">Vyber typ testu:</h3>
+                <div class="mode-btn" onclick="selectMode('verbs')" id="verbsBtn">
+                    <strong>📚 Nepravidelná slovesa</strong><br>
+                    <small>Skloňování a překlady sloves</small>
+                </div>
+                <div class="mode-btn" onclick="selectMode('questions')" id="questionsBtn">
+                    <strong>❓ Tázací zájmena</strong><br>
+                    <small>Překlad otázek do španělštiny</small>
+                </div>
+                <div class="mode-btn" onclick="selectMode('mixed')" id="mixedBtn">
+                    <strong>🔀 Smíšený test</strong><br>
+                    <small>Kombinace obojího</small>
+                </div>
+            </div>
+            
+            <button onclick="startTest()" id="startBtn" disabled style="font-size: 20px; padding: 15px 40px;">
+                🚀 Začít test
+            </button>
+        </div>
+        
+        <!-- Test Screen -->
+        <div id="testScreen" class="hidden">
+            <h1>Trenažér španělštiny</h1>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="currentItem">1</div>
+                    <div class="stat-label">Otázka</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="timeElapsed">00:00</div>
+                    <div class="stat-label">Čas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="correctCount">0</div>
+                    <div class="stat-label">Správně</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            
+            <div class="mode-indicator" id="currentMode"></div>
+            
+            <!-- Verb Section -->
+            <div class="verb-card" id="verbSection">
+                <div class="spanish-verb" id="verbToTranslate"></div>
+                
+                <div class="input-group">
+                    <label for="czechTranslation">Český překlad:</label>
+                    <input type="text" id="czechTranslation">
+                </div>
+                
+                <div class="input-group">
+                    <label for="yo">yo:</label>
+                    <input type="text" id="yo">
+                </div>
+                
+                <div class="input-group">
+                    <label for="tu">tú:</label>
+                    <input type="text" id="tu">
+                </div>
+                
+                <div class="input-group">
+                    <label for="el">él/ella/usted:</label>
+                    <input type="text" id="el">
+                </div>
+                
+                <div class="input-group">
+                    <label for="nosotros">nosotros:</label>
+                    <input type="text" id="nosotros">
+                </div>
+                
+                <div class="input-group">
+                    <label for="vosotros">vosotros:</label>
+                    <input type="text" id="vosotros">
+                </div>
+                
+                <div class="input-group">
+                    <label for="ellos">ellos/ellas/ustedes:</label>
+                    <input type="text" id="ellos">
+                </div>
+            </div>
+            
+            <!-- Question Section -->
+            <div class="question-card hidden" id="questionSection">
+                <div class="czech-question" id="czechQuestionText"></div>
+                <div style="margin-bottom: 15px;">
+                    <label for="spanishAnswer" style="font-weight: bold; color: #555;">Španělský překlad:</label>
+                </div>
+                <input type="text" id="spanishAnswer" class="spanish-input">
+            </div>
+            
+            <div class="buttons">
+                <button onclick="checkAnswer()">✅ Zkontrolovat</button>
+                <button onclick="nextItem()" id="nextBtn" disabled>➡️ Další</button>
+                <button onclick="endTest()" style="background: #dc3545;">🏁 Ukončit test</button>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden results-screen">
+            <h1>📊 Výsledky testu</h1>
+            
+            <div class="stats" style="margin-bottom: 20px;">
+                <div class="stat">
+                    <div class="stat-number" id="finalScore">0%</div>
+                    <div class="stat-label">Úspěšnost</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="finalTime">00:00</div>
+                    <div class="stat-label">Celkový čas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="finalCorrect">0</div>
+                    <div class="stat-label">Správných odpovědí</div>
+                </div>
+            </div>
+            
+            <div id="resultsList"></div>
+            
+            <div class="buttons" style="margin-top: 30px;">
+                <button onclick="startTest()">🔄 Nový test</button>
+                <button onclick="showStartScreen()" style="background: #6c757d;">🏠 Hlavní menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const verbs = [
+            { spanish: 'TENER', czech: ['mít'], conjugation: ['tengo', 'tienes', 'tiene', 'tenemos', 'tenéis', 'tienen'] },
+            { spanish: 'SALIR', czech: ['odejít', 'vyjít', 'jít ven'], conjugation: ['salgo', 'sales', 'sale', 'salimos', 'salís', 'salen'] },
+            { spanish: 'IR', czech: ['jít'], conjugation: ['voy', 'vas', 'va', 'vamos', 'vais', 'van'] },
+            { spanish: 'SER', czech: ['být'], conjugation: ['soy', 'eres', 'es', 'somos', 'sois', 'son'] },
+            { spanish: 'QUERER', czech: ['chtít', 'milovat'], conjugation: ['quiero', 'quieres', 'quiere', 'queremos', 'queréis', 'quieren'] },
+            { spanish: 'DECIR', czech: ['říct', 'říkat'], conjugation: ['digo', 'dices', 'dice', 'decimos', 'decís', 'dicen'] },
+            { spanish: 'HACER', czech: ['dělat'], conjugation: ['hago', 'haces', 'hace', 'hacemos', 'hacéis', 'hacen'] },
+            { spanish: 'ESTAR', czech: ['být'], conjugation: ['estoy', 'estás', 'está', 'estamos', 'estáis', 'están'] },
+            { spanish: 'HABER', czech: ['mít', 'hay'], conjugation: ['he', 'has', 'ha', 'hemos', 'habéis', 'han'] },
+            { spanish: 'PROBAR', czech: ['ochutnat', 'zkoušet'], conjugation: ['pruebo', 'pruebas', 'prueba', 'probamos', 'probáis', 'prueban'] }
+        ];
+        
+        const questions = [
+            { czech: 'Jaké je tvoje jméno?', spanish: ['¿cómo te llamas?', '¿cuál es tu nombre?'] },
+            { czech: 'Kdy přijdeš?', spanish: ['¿cuándo vienes?', '¿cuándo llegas?'] },
+            { czech: 'Kolik to stojí?', spanish: ['¿cuánto cuesta?', '¿cuánto vale?'] },
+            { czech: 'Kdo je to?', spanish: ['¿quién es?'] },
+            { czech: 'Co děláš?', spanish: ['¿qué haces?'] },
+            { czech: 'Jak se máš?', spanish: ['¿cómo estás?'] },
+            { czech: 'Který den?', spanish: ['¿qué día?', '¿cuál día?'] },
+            { czech: 'Kolik je hodin?', spanish: ['¿qué hora es?'] },
+            { czech: 'Kde bydlíš?', spanish: ['¿dónde vives?'] },
+            { czech: 'Kdy se narodil?', spanish: ['¿cuándo nació?'] },
+            { czech: 'Kolik máš let?', spanish: ['¿cuántos años tienes?'] },
+            { czech: 'Co si přeješ?', spanish: ['¿qué quieres?', '¿qué deseas?'] },
+            { czech: 'Kdo je tvůj učitel?', spanish: ['¿quién es tu profesor?'] },
+            { czech: 'Jaká je tvoje adresa?', spanish: ['¿cuál es tu dirección?'] },
+            { czech: 'Jak dlouho to trvá?', spanish: ['¿cuánto tiempo dura?', '¿cuánto dura?'] }
+        ];
+        
+        let selectedMode = '';
+        let currentTest = [];
+        let currentItemIndex = 0;
+        let startTime;
+        let timerInterval;
+        let results = [];
+        let totalCorrect = 0;
+        
+        function selectMode(mode) {
+            selectedMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById(mode + 'Btn').classList.add('selected');
+            document.getElementById('startBtn').disabled = false;
+        }
+        
+        function showStartScreen() {
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('testScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            selectedMode = '';
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('startBtn').disabled = true;
+        }
+        
+        function startTest() {
+            if (!selectedMode) return;
+            
+            // Prepare test data based on selected mode
+            currentTest = [];
+            
+            if (selectedMode === 'verbs') {
+                currentTest = [...verbs].sort(() => Math.random() - 0.5).map(v => ({type: 'verb', data: v}));
+            } else if (selectedMode === 'questions') {
+                currentTest = [...questions].sort(() => Math.random() - 0.5).map(q => ({type: 'question', data: q}));
+            } else if (selectedMode === 'mixed') {
+                const shuffledVerbs = [...verbs].sort(() => Math.random() - 0.5).map(v => ({type: 'verb', data: v}));
+                const shuffledQuestions = [...questions].sort(() => Math.random() - 0.5).map(q => ({type: 'question', data: q}));
+                
+                // Mix them together
+                currentTest = [...shuffledVerbs, ...shuffledQuestions].sort(() => Math.random() - 0.5);
+            }
+            
+            // Reset everything
+            currentItemIndex = 0;
+            results = [];
+            totalCorrect = 0;
+            
+            // Show test screen
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('testScreen').classList.remove('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            
+            // Start timer
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Load first item
+            loadCurrentItem();
+        }
+        
+        function loadCurrentItem() {
+            if (currentItemIndex >= currentTest.length) {
+                endTest();
+                return;
+            }
+            
+            const item = currentTest[currentItemIndex];
+            document.getElementById('currentItem').textContent = currentItemIndex + 1;
+            document.getElementById('correctCount').textContent = totalCorrect;
+            
+            // Update progress bar
+            const progress = ((currentItemIndex) / currentTest.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Show appropriate section
+            if (item.type === 'verb') {
+                document.getElementById('verbSection').classList.remove('hidden');
+                document.getElementById('questionSection').classList.add('hidden');
+                document.getElementById('currentMode').textContent = '📚 Nepravidelné sloveso';
+                loadVerb(item.data);
+            } else {
+                document.getElementById('verbSection').classList.add('hidden');
+                document.getElementById('questionSection').classList.remove('hidden');
+                document.getElementById('currentMode').textContent = '❓ Tázací zájmeno';
+                loadQuestion(item.data);
+            }
+            
+            // Reset buttons
+            document.getElementById('nextBtn').disabled = true;
+        }
+        
+        function loadVerb(verb) {
+            document.getElementById('verbToTranslate').textContent = verb.spanish;
+            
+            // Clear all inputs
+            const inputs = ['czechTranslation', 'yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                input.value = '';
+                input.className = '';
+                input.disabled = false;
+            });
+        }
+        
+        function loadQuestion(question) {
+            document.getElementById('czechQuestionText').textContent = question.czech;
+            
+            const input = document.getElementById('spanishAnswer');
+            input.value = '';
+            input.className = 'spanish-input';
+            input.disabled = false;
+        }
+        
+        function checkAnswer() {
+            const item = currentTest[currentItemIndex];
+            
+            if (item.type === 'verb') {
+                checkVerbAnswer(item.data);
+            } else {
+                checkQuestionAnswer(item.data);
+            }
+            
+            document.getElementById('nextBtn').disabled = false;
+        }
+        
+        function checkVerbAnswer(verb) {
+            const userInputs = {
+                czech: document.getElementById('czechTranslation').value.trim().toLowerCase(),
+                conjugations: [
+                    document.getElementById('yo').value.trim().toLowerCase(),
+                    document.getElementById('tu').value.trim().toLowerCase(),
+                    document.getElementById('el').value.trim().toLowerCase(),
+                    document.getElementById('nosotros').value.trim().toLowerCase(),
+                    document.getElementById('vosotros').value.trim().toLowerCase(),
+                    document.getElementById('ellos').value.trim().toLowerCase()
+                ]
+            };
+            
+            let correct = 0;
+            let total = 7;
+            
+            // Check Czech translation
+            const czechCorrect = verb.czech.some(translation => 
+                translation.toLowerCase() === userInputs.czech
+            );
+            
+            if (czechCorrect) {
+                correct++;
+                document.getElementById('czechTranslation').classList.add('correct');
+            } else {
+                document.getElementById('czechTranslation').classList.add('incorrect');
+            }
+            
+            // Check conjugations
+            const inputIds = ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
+            const conjugationResults = [];
+            
+            for (let i = 0; i < 6; i++) {
+                const isCorrect = verb.conjugation[i].toLowerCase() === userInputs.conjugations[i];
+                if (isCorrect) {
+                    correct++;
+                    document.getElementById(inputIds[i]).classList.add('correct');
+                } else {
+                    document.getElementById(inputIds[i]).classList.add('incorrect');
+                }
+                conjugationResults.push({
+                    user: userInputs.conjugations[i],
+                    correct: verb.conjugation[i],
+                    isCorrect: isCorrect
+                });
+            }
+            
+            // Save result
+            results.push({
+                type: 'verb',
+                verb: verb.spanish,
+                czech: {
+                    user: userInputs.czech,
+                    correct: verb.czech.join(' / '),
+                    isCorrect: czechCorrect
+                },
+                conjugations: conjugationResults,
+                score: correct,
+                total: total
+            });
+            
+            if (correct === total) {
+                totalCorrect++;
+                document.querySelector('.verb-card').classList.add('pulse');
+                setTimeout(() => document.querySelector('.verb-card').classList.remove('pulse'), 300);
+            }
+            
+            // Disable inputs
+            const inputs = ['czechTranslation', 'yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
+            inputs.forEach(id => {
+                document.getElementById(id).disabled = true;
+            });
+        }
+        
+        function checkQuestionAnswer(question) {
+            const userAnswer = document.getElementById('spanishAnswer').value.trim().toLowerCase();
+            const isCorrect = question.spanish.some(correct => 
+                correct.toLowerCase() === userAnswer
+            );
+            
+            if (isCorrect) {
+                document.getElementById('spanishAnswer').classList.add('correct');
+                totalCorrect++;
+                document.querySelector('.question-card').classList.add('pulse');
+                setTimeout(() => document.querySelector('.question-card').classList.remove('pulse'), 300);
+            } else {
+                document.getElementById('spanishAnswer').classList.add('incorrect');
+            }
+            
+            // Save result
+            results.push({
+                type: 'question',
+                czech: question.czech,
+                user: userAnswer,
+                correct: question.spanish.join(' / '),
+                isCorrect: isCorrect,
+                score: isCorrect ? 1 : 0,
+                total: 1
+            });
+            
+            document.getElementById('spanishAnswer').disabled = true;
+        }
+        
+        function nextItem() {
+            currentItemIndex++;
+            loadCurrentItem();
+        }
+        
+        function endTest() {
+            clearInterval(timerInterval);
+            
+            // Calculate final stats
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            const totalPossible = results.reduce((sum, result) => sum + result.total, 0);
+            const totalCorrectAnswers = results.reduce((sum, result) => sum + result.score, 0);
+            const successRate = Math.round((totalCorrectAnswers / totalPossible) * 100);
+            
+            // Show results screen
+            document.getElementById('testScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            // Update final stats
+            document.getElementById('finalScore').textContent = successRate + '%';
+            document.getElementById('finalTime').textContent = formatTime(totalTime);
+            document.getElementById('finalCorrect').textContent = totalCorrectAnswers + '/' + totalPossible;
+            
+            // Show detailed results
+            showDetailedResults();
+        }
+        
+        function showDetailedResults() {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '<h3 style="margin-bottom: 20px;">Podrobné výsledky:</h3>';
+            
+            results.forEach((result, index) => {
+                const itemResult = document.createElement('div');
+                itemResult.style.marginBottom = '20px';
+                itemResult.style.background = 'white';
+                itemResult.style.padding = '15px';
+                itemResult.style.borderRadius = '10px';
+                itemResult.style.textAlign = 'left';
+                
+                if (result.type === 'verb') {
+                    let html = `<h4>📚 ${result.verb} - ${result.score}/${result.total} bodů</h4>`;
+                    
+                    html += `<div style="margin: 10px 0;">
+                        <strong>Překlad:</strong> 
+                        <span style="color: ${result.czech.isCorrect ? 'green' : 'red'}">
+                            ${result.czech.user || '(nevyplněno)'}
+                        </span>
+                        ${!result.czech.isCorrect ? `<br><small>Správně: ${result.czech.correct}</small>` : ''}
+                    </div>`;
+                    
+                    const persons = ['yo', 'tú', 'él', 'nosotros', 'vosotros', 'ellos'];
+                    result.conjugations.forEach((conj, i) => {
+                        html += `<div style="margin: 5px 0;">
+                            <strong>${persons[i]}:</strong> 
+                            <span style="color: ${conj.isCorrect ? 'green' : 'red'}">
+                                ${conj.user || '(nevyplněno)'}
+                            </span>
+                            ${!conj.isCorrect ? `<small> → ${conj.correct}</small>` : ''}
+                        </div>`;
+                    });
+                    
+                    itemResult.innerHTML = html;
+                } else {
+                    let html = `<h4>❓ ${result.czech} - ${result.score}/${result.total} bodů</h4>`;
+                    
+                    html += `<div style="margin: 10px 0;">
+                        <strong>Tvoje odpověď:</strong> 
+                        <span style="color: ${result.isCorrect ? 'green' : 'red'}">
+                            ${result.user || '(nevyplněno)'}
+                        </span>
+                        ${!result.isCorrect ? `<br><small>Správně: ${result.correct}</small>` : ''}
+                    </div>`;
+                    
+                    itemResult.innerHTML = html;
+                }
+                
+                resultsList.appendChild(itemResult);
+            });
+        }
+        
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('timeElapsed').textContent = formatTime(elapsed);
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+        }
+        
+        // Allow Enter key to check answer
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('testScreen').classList.contains('hidden')) {
+                if (!document.getElementById('nextBtn').disabled) {
+                    nextItem();
+                } else {
+                    checkAnswer();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
