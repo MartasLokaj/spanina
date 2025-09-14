@@ -514,13 +514,18 @@
         function loadVerb(verb) {
             document.getElementById('verbToTranslate').textContent = verb.spanish;
             
-            // Clear all inputs
+            // Clear all inputs and remove correct answers
             const inputs = ['czechTranslation', 'yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos'];
             inputs.forEach(id => {
                 const input = document.getElementById(id);
                 input.value = '';
                 input.className = '';
                 input.disabled = false;
+                
+                // Remove any existing correct answer displays
+                const inputGroup = input.parentElement;
+                const existingAnswer = inputGroup.querySelector('.correct-answer');
+                if (existingAnswer) existingAnswer.remove();
             });
         }
         
@@ -531,6 +536,11 @@
             input.value = '';
             input.className = 'spanish-input';
             input.disabled = false;
+            
+            // Remove any existing correct answer displays
+            const inputGroup = input.parentElement;
+            const existingAnswer = inputGroup.querySelector('.correct-answer');
+            if (existingAnswer) existingAnswer.remove();
         }
         
         function checkAnswer() {
